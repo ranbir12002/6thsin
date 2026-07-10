@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { useSiteData } from '../admin/store/SiteDataContext';
 
 const godrayVertexShader = `
 varying vec2 vUv;
@@ -50,32 +51,45 @@ void main() {
 `;
 
 export default function Hero() {
+  const { frontpage } = useSiteData();
+  const heroText = frontpage?.hero?.text || 'BECOME A PART OF THE WORLD';
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    if (!canvasContainerRef.current || cleanupRef.current) return;
-
     const container = canvasContainerRef.current;
+    if (!container || cleanupRef.current) return;
     let time = 0;
     let animationId: number;
     let disposed = false;
+
+    const width = container.clientWidth || window.innerWidth;
+    let height = container.clientHeight;
+    if (!height) {
+      if (window.innerWidth >= 1024) {
+        height = 700;
+      } else if (window.innerWidth >= 768) {
+        height = window.innerHeight * 0.8;
+      } else {
+        height = window.innerHeight * 0.6;
+      }
+    }
 
     // Scene setup
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
       75,
-      window.innerWidth / window.innerHeight,
+      width / height,
       0.1,
       1000
     );
     camera.position.z = 15;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
@@ -90,9 +104,11 @@ export default function Hero() {
     // Mouse tracking
     let mousePos = new THREE.Vector3(5, 5, 5);
     const handleMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const relativeY = e.clientY - rect.top;
       const vector = new THREE.Vector3(
-        (e.clientX / window.innerWidth) * 2 - 1,
-        -(e.clientY / window.innerHeight) * 2 + 1,
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -(relativeY / rect.height) * 2 + 1,
         0.5
       );
       vector.unproject(camera);
@@ -137,17 +153,24 @@ export default function Hero() {
       (font) => {
         if (disposed) return;
 
-        const fullText = 'BECOME A PART OF THE WORLD';
+        const fullText = heroText;
         const isMobile = window.innerWidth < 768;
 
         if (isMobile) {
-          // Two lines on mobile
-          const line1 = 'BECOME A PART';
-          const line2 = 'OF THE WORLD';
+          // Dynamically split text into two lines on mobile
+          const words = fullText.split(' ');
+          let line1 = fullText;
+          let line2 = '';
+          if (words.length > 1) {
+            const mid = Math.floor(words.length / 2);
+            line1 = words.slice(0, mid).join(' ');
+            line2 = words.slice(mid).join(' ');
+          }
           const charWidth = 1.8;
           const lineHeight = 2.2;
 
           [line1, line2].forEach((line, lineIdx) => {
+            if (!line) return;
             const totalWidth = line.length * charWidth;
             let currentX = -totalWidth / 2;
             const yOffset = (lineIdx === 0 ? 1 : -1) * lineHeight;
@@ -249,9 +272,20 @@ export default function Hero() {
 
     // Resize handler
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const w = container.clientWidth || window.innerWidth;
+      let h = container.clientHeight;
+      if (!h) {
+        if (window.innerWidth >= 1024) {
+          h = 700;
+        } else if (window.innerWidth >= 768) {
+          h = window.innerHeight * 0.8;
+        } else {
+          h = window.innerHeight * 0.6;
+        }
+      }
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
 
@@ -277,14 +311,14 @@ export default function Hero() {
         cleanupRef.current = null;
       }
     };
-  }, []);
+  }, [heroText]);
 
   return (
     <section
       ref={containerRef}
       id="hero"
-      className="relative w-full overflow-hidden"
-      style={{ height: '100vh', backgroundColor: '#050505' }}
+      className="relative w-full overflow-hidden h-[60vh] md:h-[80vh] lg:h-[700px]"
+      style={{ backgroundColor: '#050505' }}
     >
       {/* Background Video */}
       <video

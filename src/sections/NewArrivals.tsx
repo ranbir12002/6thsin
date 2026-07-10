@@ -41,7 +41,7 @@ function ProductCard({ id, name, price, image }: {
           </span>
         </div>
       </div>
-      <h3 className="font-inter text-[15px] text-[#F6F6F6] mt-3 leading-[1.6]">{name}</h3>
+      <h3 className="font-inter text-[14px] text-[#F6F6F6] mt-3 leading-[1.5] truncate">{name}</h3>
       <p className="font-inter text-[11px] tracking-[0.05em] text-[rgba(246,246,246,0.6)] mt-1">
         {price}
       </p>
@@ -119,7 +119,7 @@ export default function NewArrivals() {
 
       <div
         ref={gridRef}
-        className="grid grid-cols-2 md:grid-cols-4 gap-6"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
       >
         {products.map((product) => (
           <ProductCard

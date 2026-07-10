@@ -5,12 +5,12 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from './sections/Header';
 import Hero from './sections/Hero';
-import CategorySlider from './sections/CategorySlider';
 import FeaturedCollections from './sections/FeaturedCollections';
 import NewArrivals from './sections/NewArrivals';
 import Lookbook from './sections/Lookbook';
 import Footer from './sections/Footer';
 import ProductDetail from './pages/ProductDetail';
+import CategoryPage from './pages/CategoryPage';
 import { SiteDataProvider } from './admin/store/SiteDataContext';
 import AdminLayout from './admin/AdminLayout';
 import Dashboard from './admin/pages/Dashboard';
@@ -58,7 +58,7 @@ function HomePage() {
     <>
       <main>
         <Hero />
-        <CategorySlider />
+        {/* <CategorySlider /> */}
         <FeaturedCollections />
         <NewArrivals />
         <Lookbook />
@@ -124,6 +124,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/category/:category/:subcategory?" element={<CategoryPage />} />
             </Routes>
           </div>
         </>

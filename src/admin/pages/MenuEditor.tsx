@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Pencil, Trash2, Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function MenuEditor() {
   const { navMenu, addCategory, updateCategory, deleteCategory, addMenuItem, updateMenuItem, deleteMenuItem } = useSiteData();
@@ -14,10 +15,15 @@ export default function MenuEditor() {
   const [itemLabel, setItemLabel] = useState('');
   const [itemHref, setItemHref] = useState('');
 
-  function handleAddCategory() {
+  async function handleAddCategory() {
     const label = prompt('Category label:');
     if (label && label.trim()) {
-      addCategory({ label: label.trim(), children: [] });
+      try {
+        await addCategory({ label: label.trim(), children: [] });
+        toast.success('Category added successfully');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to add category');
+      }
     }
   }
 
@@ -26,25 +32,40 @@ export default function MenuEditor() {
     setCategoryLabel(cat.label);
   }
 
-  function handleSaveCategory(id: string) {
+  async function handleSaveCategory(id: string) {
     if (categoryLabel.trim()) {
-      updateCategory(id, { label: categoryLabel.trim() });
+      try {
+        await updateCategory(id, { label: categoryLabel.trim() });
+        toast.success('Category updated successfully');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to update category');
+      }
     }
     setEditingCategory(null);
     setCategoryLabel('');
   }
 
-  function handleDeleteCategory(id: string) {
+  async function handleDeleteCategory(id: string) {
     if (confirm('Delete this category and all its items?')) {
-      deleteCategory(id);
+      try {
+        await deleteCategory(id);
+        toast.success('Category deleted successfully');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to delete category');
+      }
     }
   }
 
-  function handleAddItem(categoryId: string) {
+  async function handleAddItem(categoryId: string) {
     const label = prompt('Item label:');
     if (label && label.trim()) {
       const href = prompt('Item href (e.g. /category/sub):', '#');
-      addMenuItem(categoryId, { label: label.trim(), href: href || '#' });
+      try {
+        await addMenuItem(categoryId, { label: label.trim(), href: href || '#' });
+        toast.success('Item added successfully');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to add item');
+      }
     }
   }
 
@@ -54,12 +75,17 @@ export default function MenuEditor() {
     setItemHref(item.href);
   }
 
-  function handleSaveItem() {
+  async function handleSaveItem() {
     if (editingItem && itemLabel.trim()) {
-      updateMenuItem(editingItem.categoryId, editingItem.itemId, {
-        label: itemLabel.trim(),
-        href: itemHref || '#',
-      });
+      try {
+        await updateMenuItem(editingItem.categoryId, editingItem.itemId, {
+          label: itemLabel.trim(),
+          href: itemHref || '#',
+        });
+        toast.success('Item updated successfully');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to update item');
+      }
     }
     setEditingItem(null);
     setItemLabel('');
@@ -206,9 +232,14 @@ export default function MenuEditor() {
                                   variant="ghost"
                                   size="icon"
                                   className="size-7 text-[rgba(246,246,246,0.5)] hover:text-red-500"
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (confirm(`Delete "${item.label}"?`)) {
-                                      deleteMenuItem(category.id, item.id);
+                                      try {
+                                        await deleteMenuItem(category.id, item.id);
+                                        toast.success('Item deleted successfully');
+                                      } catch (err: any) {
+                                        toast.error(err.message || 'Failed to delete item');
+                                      }
                                     }
                                   }}
                                 >

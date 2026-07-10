@@ -10,6 +10,7 @@ import {
 } from '../../components/ui/table';
 import { Button } from '../../components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProductsList() {
   const { products, deleteProduct } = useSiteData();
@@ -82,9 +83,14 @@ export default function ProductsList() {
                         variant="ghost"
                         size="icon"
                         className="size-8 sm:size-9 text-[rgba(246,246,246,0.5)] hover:text-red-500"
-                        onClick={() => {
+                        onClick={async () => {
                           if (confirm(`Delete "${product.name}"?`)) {
-                            deleteProduct(product.id);
+                            try {
+                              await deleteProduct(product.id);
+                              toast.success('Product deleted successfully');
+                            } catch (error: any) {
+                              toast.error(error.message || 'Failed to delete product');
+                            }
                           }
                         }}
                       >

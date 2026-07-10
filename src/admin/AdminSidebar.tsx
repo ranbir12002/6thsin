@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
+  SidebarRail,
 } from '../components/ui/sidebar';
 import {
   LayoutDashboard,
@@ -18,6 +19,8 @@ import {
   Plus,
   Menu,
 } from 'lucide-react';
+
+import { useSiteData } from './store/SiteDataContext';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -28,6 +31,8 @@ const navItems = [
 ];
 
 export default function AdminSidebar() {
+  const { logout } = useSiteData();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -57,7 +62,13 @@ export default function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 flex flex-col gap-2">
+        <button
+          onClick={logout}
+          className="text-left text-xs text-[rgba(246,246,246,0.4)] hover:text-red-500 transition-colors uppercase tracking-wider font-semibold"
+        >
+          Sign Out
+        </button>
         <NavLink
           to="/"
           className="text-xs text-[rgba(246,246,246,0.4)] hover:text-crimson transition-colors"
@@ -65,6 +76,7 @@ export default function AdminSidebar() {
           &larr; Back to site
         </NavLink>
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

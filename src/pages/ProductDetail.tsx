@@ -19,9 +19,9 @@ function ImageGallery({ product }: { product: Product }) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col">
       {groups.map((group, gi) => (
-        <div key={gi} className="flex flex-col gap-4">
+        <div key={gi} className="flex flex-col">
           <div className="relative overflow-hidden bg-[#111]">
             <img
               src={group.big}
@@ -31,7 +31,7 @@ function ImageGallery({ product }: { product: Product }) {
             />
           </div>
           {group.small.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2">
               {group.small.map((src, si) => (
                 <div key={si} className="relative overflow-hidden bg-[#111]">
                   <img
@@ -287,7 +287,7 @@ export default function ProductDetail() {
           <ImageGallery product={product} />
 
           {/* Right — Product Info */}
-          <div className="flex flex-col gap-8 md:sticky md:top-28">
+          <div className="flex flex-col gap-8 md:sticky md:top-28 self-start md:max-h-[calc(100vh-7rem)] md:overflow-y-auto">
             {/* Title & Price */}
             <div>
               <h1 className="font-anton text-[clamp(36px,5vw,64px)] text-[#F6F6F6] leading-[0.9] tracking-[-0.02em]">

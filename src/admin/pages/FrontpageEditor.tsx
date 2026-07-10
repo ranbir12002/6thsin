@@ -5,6 +5,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { toast } from 'sonner';
 
 export default function FrontpageEditor() {
   const { frontpage, updateFrontpage } = useSiteData();
@@ -14,6 +15,7 @@ export default function FrontpageEditor() {
   const [fcBody, setFcBody] = useState(frontpage.featuredCollections.body);
   const [fcCta, setFcCta] = useState(frontpage.featuredCollections.ctaText);
   const [naTitle, setNaTitle] = useState(frontpage.newArrivals.title);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setHeroText(frontpage.hero.text);
@@ -23,18 +25,26 @@ export default function FrontpageEditor() {
     setNaTitle(frontpage.newArrivals.title);
   }, [frontpage]);
 
-  function handleSave() {
-    updateFrontpage({
-      hero: { text: heroText },
-      featuredCollections: {
-        heading: fcHeading,
-        body: fcBody,
-        ctaText: fcCta,
-      },
-      newArrivals: {
-        title: naTitle,
-      },
-    });
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await updateFrontpage({
+        hero: { text: heroText },
+        featuredCollections: {
+          heading: fcHeading,
+          body: fcBody,
+          ctaText: fcCta,
+        },
+        newArrivals: {
+          title: naTitle,
+        },
+      });
+      toast.success('Frontpage settings saved successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -116,8 +126,8 @@ export default function FrontpageEditor() {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} className="bg-crimson hover:bg-crimson/90 text-white w-full sm:w-auto">
-        Save Changes
+      <Button onClick={handleSave} className="bg-crimson hover:bg-crimson/90 text-white w-full sm:w-auto" disabled={saving}>
+        {saving ? 'Saving...' : 'Save Changes'}
       </Button>
     </div>
   );
