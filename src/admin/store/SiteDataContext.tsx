@@ -12,8 +12,19 @@ const DEFAULT_FRONTPAGE: FrontpageSettings = {
     heading: 'REDEFINING THE BOUNDARIES OF STYLE',
     body: 'Founded on the principle that fashion should be fearless, 6th SIN bridges the gap between luxury craftsmanship and street-level attitude. Every piece is designed to make a statement — bold, unapologetic, and unmistakably yours.',
     ctaText: 'EXPLORE THE COLLECTION',
+    images: [
+      '/images/collection-editorial-1.jpg',
+      '/images/collection-editorial-2.jpg'
+    ],
   },
   newArrivals: { title: 'NEW ARRIVALS' },
+  lookbook: {
+    images: [
+      '/images/lookbook-1.jpg', '/images/lookbook-2.jpg', '/images/lookbook-3.jpg', '/images/lookbook-4.jpg',
+      '/images/lookbook-5.jpg', '/images/lookbook-6.jpg', '/images/lookbook-7.jpg', '/images/lookbook-8.jpg',
+      '/images/lookbook-9.jpg', '/images/lookbook-10.jpg', '/images/lookbook-11.jpg', '/images/lookbook-12.jpg'
+    ]
+  }
 };
 
 const DEFAULT_MENU: NavMenuCategory[] = [
@@ -81,7 +92,7 @@ const STORAGE_KEY_CACHE_VERSION = '6thsin_admin_cache_version';
 // Bump this number whenever the shape of the cached defaults changes
 // (e.g. menu hrefs updated, product fields added) so stale localStorage
 // entries from older app versions are discarded.
-const CACHE_VERSION = 3;
+const CACHE_VERSION = 4;
 
 function invalidateStaleCache() {
   try {

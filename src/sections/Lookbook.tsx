@@ -1,18 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useSiteData } from '../admin/store/SiteDataContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const lookbookImages = [
-  ['/images/lookbook-1.jpg', '/images/lookbook-2.jpg', '/images/lookbook-3.jpg', '/images/lookbook-4.jpg'],
-  ['/images/lookbook-5.jpg', '/images/lookbook-6.jpg', '/images/lookbook-7.jpg', '/images/lookbook-8.jpg'],
-  ['/images/lookbook-9.jpg', '/images/lookbook-10.jpg', '/images/lookbook-11.jpg', '/images/lookbook-12.jpg'],
-];
-
-const allImages = lookbookImages.flat();
-
 export default function Lookbook() {
+  const { frontpage } = useSiteData();
+  const dbImages = frontpage.lookbook?.images || [];
+
+  // Chunk lookbook images into 3 columns dynamically
+  const chunkCount = dbImages.length > 0 ? Math.ceil(dbImages.length / 3) : 4;
+  const lookbookImages = dbImages.length > 0
+    ? [
+        dbImages.slice(0, chunkCount),
+        dbImages.slice(chunkCount, chunkCount * 2),
+        dbImages.slice(chunkCount * 2)
+      ]
+    : [
+        ['/images/lookbook-1.jpg', '/images/lookbook-2.jpg', '/images/lookbook-3.jpg', '/images/lookbook-4.jpg'],
+        ['/images/lookbook-5.jpg', '/images/lookbook-6.jpg', '/images/lookbook-7.jpg', '/images/lookbook-8.jpg'],
+        ['/images/lookbook-9.jpg', '/images/lookbook-10.jpg', '/images/lookbook-11.jpg', '/images/lookbook-12.jpg'],
+      ];
+
+  const allImages = lookbookImages.flat();
+  const allImagesKey = dbImages.join(',');
   const sectionRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<(HTMLDivElement | null)[]>([]);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -116,7 +128,7 @@ export default function Lookbook() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [allImagesKey]);
 
   return (
     <section

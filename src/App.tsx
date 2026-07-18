@@ -127,6 +127,14 @@ export default function App() {
               <Route path="/category/:category/:subcategory?" element={<CategoryPage />} />
             </Routes>
           </div>
+          <a
+            href="https://wa.me/919999999999"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 overflow-hidden"
+          >
+            <img src="/whtaspplogo.png" alt="WhatsApp" className="w-full h-full object-cover brightness-[0.4] contrast-[1.1]" />
+          </a>
         </>
       )}
     </SiteDataProvider>

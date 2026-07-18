@@ -23,9 +23,35 @@ const frontpageSchema = new mongoose.Schema(
         type: String,
         default: 'EXPLORE THE COLLECTION',
       },
+      images: {
+        type: [String],
+        default: [
+          '/images/collection-editorial-1.jpg',
+          '/images/collection-editorial-2.jpg',
+        ],
+      },
     },
     newArrivals: {
       title: { type: String, default: 'NEW ARRIVALS' },
+    },
+    lookbook: {
+      images: {
+        type: [String],
+        default: [
+          '/images/lookbook-1.jpg',
+          '/images/lookbook-2.jpg',
+          '/images/lookbook-3.jpg',
+          '/images/lookbook-4.jpg',
+          '/images/lookbook-5.jpg',
+          '/images/lookbook-6.jpg',
+          '/images/lookbook-7.jpg',
+          '/images/lookbook-8.jpg',
+          '/images/lookbook-9.jpg',
+          '/images/lookbook-10.jpg',
+          '/images/lookbook-11.jpg',
+          '/images/lookbook-12.jpg',
+        ],
+      },
     },
   },
   {

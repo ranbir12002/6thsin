@@ -6,8 +6,12 @@ export interface FrontpageSettings {
     heading: string;
     body: string;
     ctaText: string;
+    images?: string[];
   };
   newArrivals: {
     title: string;
+  };
+  lookbook?: {
+    images: string[];
   };
 }

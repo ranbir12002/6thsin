@@ -13,6 +13,10 @@ export default function FeaturedCollections() {
   const ctaRef = useRef<HTMLAnchorElement>(null);
   const imagesRef = useRef<HTMLDivElement>(null);
 
+  const dbImages = frontpage.featuredCollections.images || [];
+  const image1 = dbImages[0] || '/images/collection-editorial-1.jpg';
+  const image2 = dbImages[1] || '/images/collection-editorial-2.jpg';
+
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -91,7 +95,7 @@ export default function FeaturedCollections() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [image1, image2]); // Re-run effect if images change
 
   return (
     <section
@@ -103,10 +107,10 @@ export default function FeaturedCollections() {
       }}
     >
       {/* Text Block */}
-      <div className="max-w-[800px] mx-auto text-center mb-16">
+      <div className="max-w-[800px] mx-auto text-center mb-16 overflow-hidden">
         <h2
           ref={headingRef}
-          className="font-anton text-[clamp(48px,8vw,120px)] text-[#050505] leading-[0.9] tracking-[-0.02em] mb-8"
+          className="font-anton text-[clamp(24px,4.5vw,56px)] text-[#050505] leading-none tracking-[-0.02em] mb-8 whitespace-nowrap overflow-hidden text-ellipsis uppercase"
           style={{ opacity: 0 }}
         >
           {frontpage.featuredCollections.heading}
@@ -136,7 +140,7 @@ export default function FeaturedCollections() {
       >
         <div className="relative overflow-hidden" style={{ aspectRatio: '4/3' }}>
           <img
-            src="/images/collection-editorial-1.jpg"
+            src={image1}
             alt="Collection editorial"
             className="w-full h-full object-cover"
             loading="lazy"
@@ -147,7 +151,7 @@ export default function FeaturedCollections() {
           style={{ aspectRatio: '4/3' }}
         >
           <img
-            src="/images/collection-editorial-2.jpg"
+            src={image2}
             alt="Collection detail"
             className="w-full h-full object-cover"
             loading="lazy"

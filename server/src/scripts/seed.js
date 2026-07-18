@@ -18,7 +18,7 @@ const Frontpage = require('../models/Frontpage');
 const MenuCategory = require('../models/Menu');
 
 const DEFAULT_ADMIN = {
-  email: 'admin@6thsin.com',
+  email: 'admin@admin.com',
   password: 'admin123',
   name: 'Admin',
 };
@@ -29,8 +29,28 @@ const DEFAULT_FRONTPAGE = {
     heading: 'REDEFINING THE BOUNDARIES OF STYLE',
     body: 'Founded on the principle that fashion should be fearless, 6th SIN bridges the gap between luxury craftsmanship and street-level attitude. Every piece is designed to make a statement — bold, unapologetic, and unmistakably yours.',
     ctaText: 'EXPLORE THE COLLECTION',
+    images: [
+      '/images/collection-editorial-1.jpg',
+      '/images/collection-editorial-2.jpg',
+    ],
   },
   newArrivals: { title: 'NEW ARRIVALS' },
+  lookbook: {
+    images: [
+      '/images/lookbook-1.jpg',
+      '/images/lookbook-2.jpg',
+      '/images/lookbook-3.jpg',
+      '/images/lookbook-4.jpg',
+      '/images/lookbook-5.jpg',
+      '/images/lookbook-6.jpg',
+      '/images/lookbook-7.jpg',
+      '/images/lookbook-8.jpg',
+      '/images/lookbook-9.jpg',
+      '/images/lookbook-10.jpg',
+      '/images/lookbook-11.jpg',
+      '/images/lookbook-12.jpg',
+    ],
+  },
 };
 
 const DEFAULT_MENU = [
