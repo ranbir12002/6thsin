@@ -5,6 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 R2_PUBLIC_URL = "https://assets.sixthsin.com"
+FRONTEND_URL = "https://sixthsin.com,https://www.sixthsin.com"
 
 [[r2_buckets]]
 binding = "ASSETS"
