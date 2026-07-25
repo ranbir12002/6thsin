@@ -1,3 +1,11 @@
 name = "6thsin"
-main = "src/index.js" 
+main = "src/worker.mjs"
 compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+R2_PUBLIC_URL = "https://assets.sixthsin.com"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "sixthsin-prod"
