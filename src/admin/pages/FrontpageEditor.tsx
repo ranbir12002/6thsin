@@ -47,7 +47,7 @@ export default function FrontpageEditor() {
       const formData = new FormData();
       formData.append('images', files[0]);
 
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('https://api.sixthsin.com/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -91,7 +91,7 @@ export default function FrontpageEditor() {
         formData.append('images', files[i]);
       }
 
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('https://api.sixthsin.com/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

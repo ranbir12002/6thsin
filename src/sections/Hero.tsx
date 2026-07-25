@@ -317,7 +317,7 @@ export default function Hero() {
     <section
       ref={containerRef}
       id="hero"
-      className="relative w-full overflow-hidden h-[60vh] md:h-[80vh] lg:h-[700px]"
+      className="relative w-full overflow-hidden min-h-[100svh]"
       style={{ backgroundColor: '#050505' }}
     >
       {/* Background Video */}
@@ -331,7 +331,7 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ zIndex: 0 }}
       >
-        <source src="/videos/hero-campaign-film.mp4" type="video/mp4" />
+        <source src="/videos/hero.mp4" type="video/mp4" />
       </video>
 
       {/* Three.js Canvas Container */}

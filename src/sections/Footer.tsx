@@ -110,11 +110,11 @@ export default function Footer() {
         }}
       >
         {/* Column 1 */}
-        <div className="flex flex-col">
+        <div className="footer__column-wrapper flex flex-col">
           {/* Menswear */}
           <div
             ref={setBlockRef(0)}
-            className="footer__block border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
+            className="footer__block footer__block--menswear border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -137,7 +137,7 @@ export default function Footer() {
           {/* Womenswear */}
           <div
             ref={setBlockRef(1)}
-            className="footer__block border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
+            className="footer__block footer__block--womenswear border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -160,11 +160,11 @@ export default function Footer() {
         </div>
 
         {/* Column 2 */}
-        <div className="flex flex-col">
+        <div className="footer__column-wrapper flex flex-col">
           {/* Brand */}
           <div
             ref={setBlockRef(2)}
-            className="footer__block border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12 flex flex-col justify-center items-center text-center"
+            className="footer__block footer__block--brand border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12 flex flex-col justify-center items-center text-center"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -181,7 +181,7 @@ export default function Footer() {
           {/* Newsletter */}
           <div
             ref={setBlockRef(3)}
-            className="footer__block border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
+            className="footer__block footer__block--newsletter border-b border-r border-[rgba(246,246,246,0.15)] p-8 md:p-12"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -203,11 +203,11 @@ export default function Footer() {
         </div>
 
         {/* Column 3 */}
-        <div className="flex flex-col">
+        <div className="footer__column-wrapper flex flex-col">
           {/* Company */}
           <div
             ref={setBlockRef(4)}
-            className="footer__block border-b border-[rgba(246,246,246,0.15)] p-8 md:p-12"
+            className="footer__block footer__block--company border-b border-[rgba(246,246,246,0.15)] p-8 md:p-12"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -230,7 +230,7 @@ export default function Footer() {
           {/* Support */}
           <div
             ref={setBlockRef(5)}
-            className="footer__block border-b border-[rgba(246,246,246,0.15)] p-8 md:p-12"
+            className="footer__block footer__block--support border-b border-[rgba(246,246,246,0.15)] p-8 md:p-12"
             style={{ transformStyle: 'preserve-3d', opacity: 0 }}
           >
             <div className="footer__content">
@@ -287,13 +287,47 @@ export default function Footer() {
       <style>{`
         @media screen and (max-width: 768px) {
           .footer__grid {
-            grid-template-columns: 1fr !important;
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
             perspective: none !important;
           }
+          .footer__column-wrapper {
+            display: contents;
+          }
           .footer__block {
-            border-right: none !important;
             opacity: 1 !important;
             padding: 2rem !important;
+          }
+          .footer__block--brand {
+            grid-column: span 2;
+            border-right: none !important;
+            order: -1; /* Place logo at the very top of footer */
+          }
+          .footer__block--menswear {
+            grid-column: span 1;
+            border-right: 1px solid rgba(246,246,246,0.15) !important;
+            order: 1;
+          }
+          .footer__block--womenswear {
+            grid-column: span 1;
+            border-right: none !important;
+            order: 2;
+          }
+          .footer__block--newsletter {
+            grid-column: span 2;
+            border-right: none !important;
+            order: 3;
+          }
+          .footer__block--company {
+            grid-column: span 1;
+            border-right: 1px solid rgba(246,246,246,0.15) !important;
+            order: 4;
+          }
+          .footer__block--support {
+            grid-column: span 1;
+            border-right: none !important;
+            border-bottom: none !important;
+            order: 5;
           }
         }
       `}</style>

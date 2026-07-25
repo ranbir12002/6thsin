@@ -4,7 +4,7 @@ import { products as defaultProducts } from '../../data/products';
 import type { FrontpageSettings } from '../types/frontpage';
 import type { NavMenuCategory, MenuItem } from '../types/menu';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://api.sixthsin.com/api';
 
 const DEFAULT_FRONTPAGE: FrontpageSettings = {
   hero: { text: 'BECOME A PART OF THE WORLD' },

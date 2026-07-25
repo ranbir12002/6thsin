@@ -139,7 +139,7 @@ export default function ProductForm() {
         formData.append('images', files[i]);
       }
 
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('https://api.sixthsin.com/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
