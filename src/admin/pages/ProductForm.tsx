@@ -134,41 +134,23 @@ export default function ProductForm() {
     setUploading(true);
 
     try {
-      const uploadedUrls: string[] = [];
+      const formData = new FormData();
+      Array.from(files).forEach((file) => formData.append('images', file));
 
-      for (const file of Array.from(files)) {
-        const presignRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://api.sixthsin.com/api'}/upload/presign`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            filename: file.name,
-            contentType: file.type || 'image/jpeg',
-          })
-        });
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://api.sixthsin.com/api'}/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
 
-        const presignData = await presignRes.json();
-        if (!presignData.success) {
-          throw new Error(presignData.message || 'Failed to get upload URL');
-        }
-
-        const uploadRes = await fetch(presignData.uploadUrl, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': file.type || 'image/jpeg',
-          },
-          body: file,
-        });
-
-        if (!uploadRes.ok) {
-          throw new Error('Failed to upload one or more images to storage');
-        }
-
-        uploadedUrls.push(presignData.publicUrl);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to upload image files');
       }
 
+      const uploadedUrls: string[] = data.files.map((f: { publicUrl: string }) => f.publicUrl);
       setUploadedImages(prev => [...prev, ...uploadedUrls]);
       toast.success(`${uploadedUrls.length} image(s) uploaded successfully`);
     } catch (err: any) {

@@ -1,21 +1,22 @@
 import { MongoClient } from 'mongodb';
 
-// Cached across requests within the same Worker isolate. Cold starts pay the
-// connection cost once; warm isolates reuse the open connection.
-let clientPromise;
-
-function getClient(env) {
-  if (!clientPromise) {
-    const client = new MongoClient(env.MONGODB_URI);
-    clientPromise = client.connect().catch((err) => {
-      clientPromise = undefined; // allow retry on next request if connect failed
-      throw err;
-    });
+// Cloudflare Workers ties every I/O object (including raw TCP sockets) to the
+// request that created it. The MongoDB driver also opens background
+// heartbeat/monitoring sockets alongside the main connection, and those
+// outlive a single request by design — which caused stray sockets from one
+// request to stall a *later* request until the runtime force-killed it
+// ("Worker's code had hung"). So: connect fresh and close within the same
+// request every time. No caching across requests.
+export async function withMongo(env, fn) {
+  const client = new MongoClient(env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 8000,
+    maxPoolSize: 1,
+    monitorCommands: false,
+  });
+  try {
+    await client.connect();
+    return await fn(client.db());
+  } finally {
+    await client.close().catch(() => {});
   }
-  return clientPromise;
-}
-
-export async function getAdminsCollection(env) {
-  const client = await getClient(env);
-  return client.db().collection('admins');
 }
