@@ -1,3 +1,10 @@
+import bcrypt from 'bcryptjs';
+import { ObjectId } from 'mongodb';
+import { getAdminsCollection } from './lib/mongo.mjs';
+import { signJwt, verifyJwt } from './lib/jwt.mjs';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const getAllowedOrigins = (env) => {
   const configured = env.FRONTEND_URL || 'https://sixthsin.com,https://www.sixthsin.com';
   return configured
@@ -51,6 +58,170 @@ export default {
         message: '6th SIN API is running on Cloudflare Workers',
         timestamp: new Date().toISOString(),
       }, {}, request, env);
+    }
+
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+      try {
+        const body = await request.json().catch(() => ({}));
+        const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+        const password = typeof body.password === 'string' ? body.password : '';
+
+        const errors = [];
+        if (!EMAIL_RE.test(email)) errors.push('Please provide a valid email');
+        if (!password) errors.push('Password is required');
+        if (errors.length) {
+          return jsonResponse({ success: false, errors }, { status: 400 }, request, env);
+        }
+
+        const admins = await getAdminsCollection(env);
+        const admin = await admins.findOne({ email });
+        if (!admin) {
+          return jsonResponse(
+            { success: false, message: 'Invalid email or password.' },
+            { status: 401 },
+            request,
+            env
+          );
+        }
+
+        const isMatch = await bcrypt.compare(password, admin.password);
+        if (!isMatch) {
+          return jsonResponse(
+            { success: false, message: 'Invalid email or password.' },
+            { status: 401 },
+            request,
+            env
+          );
+        }
+
+        const token = await signJwt({ id: admin._id.toString() }, env.JWT_SECRET, env.JWT_EXPIRES_IN);
+
+        return jsonResponse(
+          {
+            success: true,
+            token,
+            admin: { id: admin._id, email: admin.email, name: admin.name },
+          },
+          {},
+          request,
+          env
+        );
+      } catch (error) {
+        return jsonResponse(
+          { success: false, message: error.message || 'Login failed.' },
+          { status: 500 },
+          request,
+          env
+        );
+      }
+    }
+
+    if (url.pathname === '/api/auth/register-admin' && request.method === 'POST') {
+      try {
+        const secret = request.headers.get('X-Admin-Secret');
+        if (!secret || secret !== env.JWT_SECRET) {
+          return jsonResponse(
+            { success: false, message: 'Unauthorized: Invalid registration secret.' },
+            { status: 401 },
+            request,
+            env
+          );
+        }
+
+        const body = await request.json().catch(() => ({}));
+        const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+        const password = typeof body.password === 'string' ? body.password : '';
+        const name = typeof body.name === 'string' ? body.name.trim() : '';
+
+        const errors = [];
+        if (!EMAIL_RE.test(email)) errors.push('Please provide a valid email');
+        if (password.length < 8) errors.push('Password must be at least 8 characters long');
+        if (!name) errors.push('Name is required');
+        if (errors.length) {
+          return jsonResponse({ success: false, errors }, { status: 400 }, request, env);
+        }
+
+        const admins = await getAdminsCollection(env);
+        const existingAdmin = await admins.findOne({ email });
+        if (existingAdmin) {
+          return jsonResponse(
+            { success: false, message: 'Admin with this email already exists.' },
+            { status: 400 },
+            request,
+            env
+          );
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const { insertedId } = await admins.insertOne({
+          email,
+          password: hashedPassword,
+          name,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        return jsonResponse(
+          { success: true, admin: { id: insertedId, email, name } },
+          { status: 201 },
+          request,
+          env
+        );
+      } catch (error) {
+        return jsonResponse(
+          { success: false, message: error.message || 'Registration failed.' },
+          { status: 500 },
+          request,
+          env
+        );
+      }
+    }
+
+    if (url.pathname === '/api/auth/me' && request.method === 'GET') {
+      try {
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return jsonResponse(
+            { success: false, message: 'Access denied. No token provided.' },
+            { status: 401 },
+            request,
+            env
+          );
+        }
+
+        const token = authHeader.slice('Bearer '.length);
+        let decoded;
+        try {
+          decoded = await verifyJwt(token, env.JWT_SECRET);
+        } catch (error) {
+          const message =
+            error.name === 'TokenExpiredError' ? 'Token expired. Please login again.' : 'Invalid token.';
+          return jsonResponse({ success: false, message }, { status: 401 }, request, env);
+        }
+
+        const admins = await getAdminsCollection(env);
+        const admin = await admins.findOne(
+          { _id: new ObjectId(decoded.id) },
+          { projection: { password: 0 } }
+        );
+        if (!admin) {
+          return jsonResponse(
+            { success: false, message: 'Invalid token. Admin not found.' },
+            { status: 401 },
+            request,
+            env
+          );
+        }
+
+        return jsonResponse({ success: true, admin }, {}, request, env);
+      } catch (error) {
+        return jsonResponse(
+          { success: false, message: error.message || 'Request failed.' },
+          { status: 500 },
+          request,
+          env
+        );
+      }
     }
 
     if (url.pathname === '/api/products' && request.method === 'GET') {

@@ -291,11 +291,11 @@ function ProductCard({ product, variant = 'dark' }: { product: Product; variant?
   return (
     <Link
       to={`/product/${product.id}`}
-      className="group block shrink-0 w-[321.703px] md:w-auto md:shrink"
+      className="group block shrink-0 w-[38vw] max-w-[170px] min-w-[130px] md:w-auto md:max-w-none md:min-w-0 md:shrink"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative overflow-hidden bg-[#f5f5f5] w-[321.703px] h-[482.547px] md:w-full md:h-auto md:aspect-[3/4]">
+      <div className="relative overflow-hidden bg-[#f5f5f5] w-full aspect-[3/4]">
         <img
           src={product.images[0] || '/images/product-1.jpg'}
           alt={product.name}

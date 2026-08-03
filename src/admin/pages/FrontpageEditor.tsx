@@ -44,23 +44,37 @@ export default function FrontpageEditor() {
     });
 
     try {
-      const formData = new FormData();
-      formData.append('images', files[0]);
-
-      const res = await fetch('https://api.sixthsin.com/api/upload', {
+      const file = files[0];
+      const presignRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://api.sixthsin.com/api'}/upload/presign`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: formData
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || 'image/jpeg',
+        })
       });
 
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to upload image');
+      const presignData = await presignRes.json();
+      if (!presignData.success) {
+        throw new Error(presignData.message || 'Failed to get upload URL');
       }
 
-      const newUrl = data.files[0].publicUrl;
+      const uploadRes = await fetch(presignData.uploadUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type || 'image/jpeg',
+        },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error('Failed to upload image to storage');
+      }
+
+      const newUrl = presignData.publicUrl;
       setFcImages(prev => {
         const next = [...prev];
         next[slotIndex] = newUrl;
@@ -86,27 +100,43 @@ export default function FrontpageEditor() {
     setUploadingLb(true);
 
     try {
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append('images', files[i]);
+      const uploadedUrls: string[] = [];
+
+      for (const file of Array.from(files)) {
+        const presignRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://api.sixthsin.com/api'}/upload/presign`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type || 'image/jpeg',
+          })
+        });
+
+        const presignData = await presignRes.json();
+        if (!presignData.success) {
+          throw new Error(presignData.message || 'Failed to get upload URL');
+        }
+
+        const uploadRes = await fetch(presignData.uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type || 'image/jpeg',
+          },
+          body: file,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error('Failed to upload one or more images to storage');
+        }
+
+        uploadedUrls.push(presignData.publicUrl);
       }
 
-      const res = await fetch('https://api.sixthsin.com/api/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to upload images');
-      }
-
-      const newUrls = data.files.map((f: { publicUrl: string }) => f.publicUrl);
-      setLbImages(prev => [...prev, ...newUrls]);
-      toast.success(`${data.files.length} lookbook image(s) uploaded successfully`);
+      setLbImages(prev => [...prev, ...uploadedUrls]);
+      toast.success(`${uploadedUrls.length} lookbook image(s) uploaded successfully`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to upload images');
     } finally {

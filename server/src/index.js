@@ -1,4 +1,10 @@
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../prod.env') });
+
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
